@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ครูนิดงานปัก</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #e9ecef;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .card {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            width: 100%;
+            max-width: 393px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+        h2 {
+            font-size: 24px;
+            text-align: center;
+            margin: 0 0 10px;
+            color: #007bff;
+        }
+        .contact {
+            text-align: center;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .contact a {
+            color: #28a745;
+            text-decoration: none;
+        }
+        .contact a:hover {
+            text-decoration: underline;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        .popup-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 350px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            font-size: 14px;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 25px;
+        }
+        #orderTable {
+            margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            overflow-x: auto;
+            display: block;
+        }
+        #orderTable th, #orderTable td {
+            border: 1px solid #ddd;
+            padding: 6px;
+            text-align: left;
+        }
+        #orderTable th {
+            background-color: #007bff;
+            color: white;
+        }
+        #orderTable tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .print-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .print-btn:hover {
+            background-color: #218838;
+        }
+        @media only screen and (max-width: 393px) {
+            body {
+                padding: 10px;
+            }
+            h2 {
+                font-size: 20px;
+            }
+            .contact {
+                font-size: 14px;
+            }
+            select, input, button {
+                font-size: 13px;
+            }
+            .popup-content {
+                width: 90%;
+            }
+            #orderTable {
+                font-size: 10px;
+            }
+            .print-btn {
+                font-size: 10px;
+                padding: 3px 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>ครูนิดงานปัก</h2>
+        <div class="contact">
+            เบอร์ติดต่อ: <a href="tel:0892231515">089-2231515</a>
+        </div>
+        <form id="embroideryForm">
+            <div class="form-group">
+                <label>เลือกสินค้า:</label>
+                <select id="product" required onchange="updateForm()">
+                    <option value="">-- เลือกสินค้า --</option>
+                    <option value="60">เสื้อนักเรียน (60 บาท)</option>
+                    <option value="30">เสื้ออนุบาล (30 บาท)</option>
+                    <option value="30">ศพด.อบต (30 บาท)</option>
+                    <option value="60-scout">ป้ายชื่อลูกเสือ พร้อมเย็บ (60 บาท)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>จำนวน (ตัว):</label>
+                <input type="number" id="quantity" min="1" value="1" required>
+            </div>
+
+            <div id="textFields">
+                <div class="form-group">
+                    <label>ชื่อ:</label>
+                    <input type="text" id="firstName" required placeholder="เช่น สมชาย">
+                </div>
+                <div class="form-group">
+                    <label>นามสกุล:</label>
+                    <input type="text" id="lastName" required placeholder="เช่น ใจดี">
+                </div>
+                <div class="form-group" id="initialsField" style="display: none;">
+                    <label>อักษรย่อ:</label>
+                    <input type="text" id="initials" placeholder="เช่น ส.">
+                </div>
+                <div class="form-group" id="nicknameField" style="display: none;">
+                    <label>ชื่อเล่น:</label>
+                    <input type="text" id="nickname" placeholder="เช่น ชาย">
+                </div>
+            </div>
+
+            <div class="form-group" id="scoutColorField" style="display: none;">
+                <label>เลือกสีป้าย:</label>
+                <select id="scoutColor">
+                    <option value="พื้นขาว/น้ำเงิน">พื้นขาว/น้ำเงิน</option>
+                    <option value="พื้นขาว/ดำ">พื้นขาว/ดำ</option>
+                    <option value="พื้นเลือดหมู/เหลือง">พื้นเลือดหมู/เหลือง</option>
+                    <option value="พื้นดำ/เหลือง">พื้นดำ/เหลือง</option>
+                    <option value="พื้นเขียว/เหลือง">พื้นเขียว/เหลือง</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>เบอร์ติดต่อ:</label>
+                <input type="tel" id="phone" required pattern="[0-9]{10}" placeholder="เช่น 0812345678">
+            </div>
+
+            <button type="submit">คำนวณและออกใบเสร็จ</button>
+        </form>
+
+        <h3>รายการรับงาน</h3>
+        <table id="orderTable">
+            <thead>
+                <tr>
+                    <th>พิมพ์</th>
+                    <th>วันที่สั่ง</th>
+                    <th>วันรับ</th>
+                    <th>สินค้า</th>
+                    <th>จำนวน</th>
+                    <th>ข้อความ</th>
+                    <th>ตำแหน่ง</th>
+                    <th>สี</th>
+                    <th>เบอร์ติดต่อ</th>
+                    <th>ราคารวม</th>
+                </tr>
+            </thead>
+            <tbody id="orderTableBody"></tbody>
+        </table>
+    </div>
+
+    <div id="receiptPopup" class="popup">
+        <div class="popup-content">
+            <button class="close-btn" onclick="closePopup()">×</button>
+            <h3>ใบเสร็จรับเงิน - ครูนิดงานปัก</h3>
+            <p>วันที่สั่ง: <span id="orderDate"></span></p>
+            <p>วันรับงาน: <span id="receiveDate"></span></p>
+            <p>สินค้า: <span id="receiptProduct"></span></p>
+            <p>จำนวน: <span id="receiptQuantity"></span> ตัว</p>
+            <p>ข้อความ: <span id="receiptText"></span></p>
+            <p>ตำแหน่ง: <span id="receiptPosition"></span></p>
+            <p>สี: <span id="receiptColor"></span></p>
+            <p>เบอร์ติดต่อ: <span id="receiptPhone"></span></p>
+            <p>ราคารวม: <span id="totalPrice"></span> บาท</p>
+        </div>
+    </div>
+
+    <script>
+        let orders = [];
+
+        function updateForm() {
+            const product = document.getElementById('product').value;
+            const initialsField = document.getElementById('initialsField');
+            const nicknameField = document.getElementById('nicknameField');
+            const scoutColorField = document.getElementById('scoutColorField');
+            const initials = document.getElementById('initials');
+            const nickname = document.getElementById('nickname');
+
+            initialsField.style.display = 'none';
+            nicknameField.style.display = 'none';
+            scoutColorField.style.display = 'none';
+            initials.required = false;
+            nickname.required = false;
+            initials.value = '';
+            nickname.value = '';
+
+            if (product === '60') {
+                initialsField.style.display = 'block';
+                initials.required = true;
+            } else if (product === '30' && document.getElementById('product').selectedIndex === 3) {
+                nicknameField.style.display = 'block';
+                nickname.required = true;
+            } else if (product === '60-scout') {
+                scoutColorField.style.display = 'block';
+            }
+        }
+
+        function showReceipt(index) {
+            const order = orders[index];
+            document.getElementById('orderDate').textContent = order.orderDate;
+            document.getElementById('receiveDate').textContent = order.receiveDate;
+            document.getElementById('receiptProduct').textContent = order.product;
+            document.getElementById('receiptQuantity').textContent = order.quantity;
+            document.getElementById('receiptText').textContent = order.text;
+            document.getElementById('receiptPosition').textContent = order.position;
+            document.getElementById('receiptColor').textContent = order.threadColor;
+            document.getElementById('receiptPhone').textContent = order.phone;
+            document.getElementById('totalPrice').textContent = order.totalPrice;
+
+            document.getElementById('receiptPopup').style.display = 'block';
+        }
+
+        function updateOrderTable() {
+            const tbody = document.getElementById('orderTableBody');
+            tbody.innerHTML = '';
+
+            orders.forEach((order, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><button class="print-btn" onclick="showReceipt(${index})">🖨️</button></td>
+                    <td>${order.orderDate}</td>
+                    <td>${order.receiveDate}</td>
+                    <td>${order.product}</td>
+                    <td>${order.quantity}</td>
+                    <td>${order.text}</td>
+                    <td>${order.position}</td>
+                    <td>${order.threadColor}</td>
+                    <td>${order.phone}</td>
+                    <td>${order.totalPrice}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        document.getElementById('embroideryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const product = document.getElementById('product').value;
+            const productPrice = parseInt(product.split('-')[0]);
+            const productText = document.getElementById('product').options[document.getElementById('product').selectedIndex].text;
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const initials = document.getElementById('initials').value;
+            const nickname = document.getElementById('nickname').value;
+            const phone = document.getElementById('phone').value;
+            const scoutColor = document.getElementById('scoutColor').value;
+
+            let position, threadColor, fullText;
+            if (product === '60') {
+                position = 'ซ้ายและขวา';
+                threadColor = 'น้ำเงิน';
+                fullText = `${initials} ${firstName} ${lastName}`;
+            } else if (product === '30' && productText.includes('เสื้ออนุบาล')) {
+                position = 'ขวา';
+                threadColor = 'ม่วง';
+                fullText = `${firstName} ${lastName}`;
+            } else if (product === '30' && productText.includes('ศพด.อบต')) {
+                position = 'ไม่ระบุ';
+                threadColor = 'น้ำเงิน';
+                fullText = `${firstName} ${lastName} ${nickname}`;
+            } else if (product === '60-scout') {
+                position = 'หน้าอก';
+                threadColor = scoutColor;
+                fullText = `${firstName} ${lastName}`;
+            }
+
+            const totalPrice = productPrice * quantity;
+
+            const today = new Date();
+            const receiveDate = new Date(today);
+            receiveDate.setDate(today.getDate() + 3);
+
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const orderDateStr = today.toLocaleDateString('th-TH', options);
+            const receiveDateStr = receiveDate.toLocaleDateString('th-TH', options);
+
+            const orderData = {
+                orderDate: orderDateStr,
+                receiveDate: receiveDateStr,
+                product: productText,
+                quantity: quantity,
+                text: fullText,
+                position: position,
+                threadColor: threadColor,
+                phone: phone,
+                totalPrice: totalPrice
+            };
+            orders.push(orderData);
+
+            updateOrderTable();
+
+            document.getElementById('orderDate').textContent = orderDateStr;
+            document.getElementById('receiveDate').textContent = receiveDateStr;
+            document.getElementById('receiptProduct').textContent = productText;
+            document.getElementById('receiptQuantity').textContent = quantity;
+            document.getElementById('receiptText').textContent = fullText;
+            document.getElementById('receiptPosition').textContent = position;
+            document.getElementById('receiptColor').textContent = threadColor;
+            document.getElementById('receiptPhone').textContent = phone;
+            document.getElementById('totalPrice').textContent = totalPrice;
+
+            document.getElementById('receiptPopup').style.display = 'block';
+        });
+
+        function clearForm() {
+            const form = document.getElementById('embroideryForm');
+            form.reset();
+            updateForm();
+        }
+
+        function closePopup() {
+            document.getElementById('receiptPopup').style.display = 'none';
+            clearForm();
+        }
+
+        document.getElementById('receiptPopup').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePopup();
+            }
+        });
+    </script>
+</body>
+</html>
