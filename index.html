@@ -114,6 +114,22 @@
             font-size: 16px;
             line-height: 25px;
         }
+        .copy-btn {
+            background-color: #ffc107;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            display: block;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+        .copy-btn:hover {
+            background-color: #e0a800;
+        }
         #orderTable {
             margin-top: 20px;
             width: 100%;
@@ -168,6 +184,9 @@
             .print-btn {
                 font-size: 10px;
                 padding: 3px 6px;
+            }
+            .copy-btn {
+                font-size: 13px;
             }
         }
     </style>
@@ -266,6 +285,7 @@
             <p>สี: <span id="receiptColor"></span></p>
             <p>เบอร์ติดต่อ: <span id="receiptPhone"></span></p>
             <p>ราคารวม: <span id="totalPrice"></span> บาท</p>
+            <button class="copy-btn" onclick="copyReceipt()">คัดลอก</button>
         </div>
     </div>
 
@@ -312,6 +332,31 @@
             document.getElementById('totalPrice').textContent = order.totalPrice;
 
             document.getElementById('receiptPopup').style.display = 'block';
+        }
+
+        function copyReceipt() {
+            const popupContent = document.querySelector('.popup-content');
+            const textToCopy = `
+ใบเสร็จรับเงิน - ครูนิดงานปัก
+วันที่สั่ง: ${document.getElementById('orderDate').textContent}
+วันรับงาน: ${document.getElementById('receiveDate').textContent}
+สินค้า: ${document.getElementById('receiptProduct').textContent}
+จำนวน: ${document.getElementById('receiptQuantity').textContent} ตัว
+ข้อความ: ${document.getElementById('receiptText').textContent}
+ตำแหน่ง: ${document.getElementById('receiptPosition').textContent}
+สี: ${document.getElementById('receiptColor').textContent}
+เบอร์ติดต่อ: ${document.getElementById('receiptPhone').textContent}
+ราคารวม: ${document.getElementById('totalPrice').textContent} บาท
+            `.trim();
+
+            navigator.clipboard.writeText(textToCopy)
+                .then(() => {
+                    alert('คัดลอกใบเสร็จสำเร็จ!');
+                })
+                .catch(err => {
+                    console.error('เกิดข้อผิดพลาดในการคัดลอก:', err);
+                    alert('เกิดข้อผิดพลาดในการคัดลอก');
+                });
         }
 
         function updateOrderTable() {
@@ -395,7 +440,6 @@
             updateOrderTable();
 
             document.getElementById('orderDate').textContent = orderDateStr;
-            document.getElementById('receiveDate').textContent = receiveDateStr;
             document.getElementById('receiptProduct').textContent = productText;
             document.getElementById('receiptQuantity').textContent = quantity;
             document.getElementById('receiptText').textContent = fullText;
@@ -403,6 +447,7 @@
             document.getElementById('receiptColor').textContent = threadColor;
             document.getElementById('receiptPhone').textContent = phone;
             document.getElementById('totalPrice').textContent = totalPrice;
+            document.getElementById('receiveDate').textContent = receiveDateStr;
 
             document.getElementById('receiptPopup').style.display = 'block';
         });
