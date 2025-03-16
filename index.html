@@ -258,6 +258,7 @@
                 <tr>
                     <th>ลำดับ</th>
                     <th>พิมพ์</th>
+                    <th>เลขที่ใบเสร็จ</th>
                     <th>วันที่สั่ง</th>
                     <th>วันรับ</th>
                     <th>สินค้า</th>
@@ -274,6 +275,7 @@
             <button class="close-btn" onclick="closePopup()">×</button>
             <h3>ใบเสร็จรับเงิน - ครูนิดงานปัก</h3>
             <p style="text-align: center; margin: 5px 0;">089-2231515</p>
+            <p>เลขที่ใบเสร็จ: <span id="receiptNumber"></span></p>
             <p>วันที่สั่ง: <span id="orderDate"></span></p>
             <p>วันรับงาน: <span id="receiveDate"></span></p>
             <p>สินค้า: <span id="receiptProduct"></span></p>
@@ -289,6 +291,17 @@
 
     <script>
         let orders = [];
+        let receiptCounters = {}; // ตัวนับใบเสร็จตามวันที่
+
+        function generateReceiptNumber(orderDate) {
+            const dateStr = orderDate.replace(/[^0-9]/g, '').slice(0, 8); // ดึง YYYYMMDD จากวันที่สั่ง
+            if (!receiptCounters[dateStr]) {
+                receiptCounters[dateStr] = 0;
+            }
+            receiptCounters[dateStr]++;
+            const counter = String(receiptCounters[dateStr]).padStart(3, '0');
+            return `RECEIPT-${dateStr}-${counter}`;
+        }
 
         function updateForm() {
             const product = document.getElementById('product').value;
@@ -319,6 +332,7 @@
 
         function showReceipt(index) {
             const order = orders[index];
+            document.getElementById('receiptNumber').textContent = order.receiptNumber;
             document.getElementById('orderDate').textContent = order.orderDate;
             document.getElementById('receiveDate').textContent = order.receiveDate;
             document.getElementById('receiptProduct').textContent = order.product;
@@ -337,6 +351,7 @@
             const textToCopy = `
 ใบเสร็จรับเงิน - ครูนิดงานปัก
 089-2231515
+เลขที่ใบเสร็จ: ${document.getElementById('receiptNumber').textContent}
 วันที่สั่ง: ${document.getElementById('orderDate').textContent}
 วันรับงาน: ${document.getElementById('receiveDate').textContent}
 สินค้า: ${document.getElementById('receiptProduct').textContent}
@@ -367,6 +382,7 @@
                 row.innerHTML = `
                     <td>${index + 1}</td>
                     <td><button class="print-btn" onclick="showReceipt(${index})">🖨️</button></td>
+                    <td>${order.receiptNumber}</td>
                     <td>${order.orderDate}</td>
                     <td>${order.receiveDate}</td>
                     <td>${order.product}</td>
@@ -418,11 +434,12 @@
 
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
             const orderDateStr = today.toLocaleDateString('th-TH', options);
-            const receiveDateStr = receiveDate.toLocaleDateString('th-TH', options);
+            const receiptNumber = generateReceiptNumber(orderDateStr);
 
             const orderData = {
+                receiptNumber: receiptNumber,
                 orderDate: orderDateStr,
-                receiveDate: receiveDateStr,
+                receiveDate: receiveDate.toLocaleDateString('th-TH', options),
                 product: productText,
                 quantity: quantity,
                 text: fullText,
@@ -435,8 +452,9 @@
 
             updateOrderTable();
 
+            document.getElementById('receiptNumber').textContent = receiptNumber;
             document.getElementById('orderDate').textContent = orderDateStr;
-            document.getElementById('receiveDate').textContent = receiveDateStr;
+            document.getElementById('receiveDate').textContent = orderData.receiveDate;
             document.getElementById('receiptProduct').textContent = productText;
             document.getElementById('receiptQuantity').textContent = quantity;
             document.getElementById('receiptText').textContent = fullText;
