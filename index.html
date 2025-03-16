@@ -256,16 +256,13 @@
         <table id="orderTable">
             <thead>
                 <tr>
+                    <th>ลำดับ</th>
                     <th>พิมพ์</th>
                     <th>วันที่สั่ง</th>
                     <th>วันรับ</th>
                     <th>สินค้า</th>
-                    <th>จำนวน</th>
                     <th>ข้อความ</th>
-                    <th>ตำแหน่ง</th>
-                    <th>สี</th>
                     <th>เบอร์ติดต่อ</th>
-                    <th>ราคารวม</th>
                 </tr>
             </thead>
             <tbody id="orderTableBody"></tbody>
@@ -276,6 +273,7 @@
         <div class="popup-content">
             <button class="close-btn" onclick="closePopup()">×</button>
             <h3>ใบเสร็จรับเงิน - ครูนิดงานปัก</h3>
+            <p style="text-align: center; margin: 5px 0;">089-2231515</p>
             <p>วันที่สั่ง: <span id="orderDate"></span></p>
             <p>วันรับงาน: <span id="receiveDate"></span></p>
             <p>สินค้า: <span id="receiptProduct"></span></p>
@@ -338,6 +336,7 @@
             const popupContent = document.querySelector('.popup-content');
             const textToCopy = `
 ใบเสร็จรับเงิน - ครูนิดงานปัก
+089-2231515
 วันที่สั่ง: ${document.getElementById('orderDate').textContent}
 วันรับงาน: ${document.getElementById('receiveDate').textContent}
 สินค้า: ${document.getElementById('receiptProduct').textContent}
@@ -366,16 +365,13 @@
             orders.forEach((order, index) => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
+                    <td>${index + 1}</td>
                     <td><button class="print-btn" onclick="showReceipt(${index})">🖨️</button></td>
                     <td>${order.orderDate}</td>
                     <td>${order.receiveDate}</td>
                     <td>${order.product}</td>
-                    <td>${order.quantity}</td>
                     <td>${order.text}</td>
-                    <td>${order.position}</td>
-                    <td>${order.threadColor}</td>
                     <td>${order.phone}</td>
-                    <td>${order.totalPrice}</td>
                 `;
                 tbody.appendChild(row);
             });
@@ -440,6 +436,7 @@
             updateOrderTable();
 
             document.getElementById('orderDate').textContent = orderDateStr;
+            document.getElementById('receiveDate').textContent = receiveDateStr;
             document.getElementById('receiptProduct').textContent = productText;
             document.getElementById('receiptQuantity').textContent = quantity;
             document.getElementById('receiptText').textContent = fullText;
@@ -447,7 +444,6 @@
             document.getElementById('receiptColor').textContent = threadColor;
             document.getElementById('receiptPhone').textContent = phone;
             document.getElementById('totalPrice').textContent = totalPrice;
-            document.getElementById('receiveDate').textContent = receiveDateStr;
 
             document.getElementById('receiptPopup').style.display = 'block';
         });
